@@ -117,8 +117,8 @@ class Querier:
         print(bbox)
         x_scale, y_scale = self.scales[0], self.scales[1]
         x_offset, y_offset = self.offsets[0], self.offsets[1]
-        x_min, x_max = bbox[0] * x_scale + x_offset, bbox[1] * x_scale + x_offset
-        y_min, y_max = bbox[2] * y_scale + y_offset, bbox[3] * y_scale + y_offset
+        x_min, x_max = (bbox[0] - x_offset) / x_scale, (bbox[1] - y_offset) / y_scale
+        y_min, y_max = (bbox[2] - y_offset) * y_scale, (bbox[3] - y_offset) / y_scale
         bbox = [x_min, x_max, y_min, y_max]
         print(bbox)
 
