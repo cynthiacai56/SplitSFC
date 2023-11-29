@@ -67,7 +67,7 @@ class DirLoader:
         # 1. Iterate each file, read the header and extract point cloud and bbox
         with laspy.open(self.paths[0]) as f:
             point_count = f.header.point_count
-            scaless = f.header.scales.tolist()
+            scales = f.header.scales.tolist()
             offsets = f.header.offsets.tolist()
             x_min, y_min, z_min = f.header.x_min, f.header.y_min, f.header.z_min
             x_max, y_max, z_max = f.header.x_max, f.header.y_max, f.header.z_max
