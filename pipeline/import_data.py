@@ -67,7 +67,8 @@ class DirLoader:
         # 1. Iterate each file, read the header and extract point cloud and bbox
         with laspy.open(self.paths[0]) as f:
             point_count = f.header.point_count
-            scales, offsets = f.header.scales, f.header.offsets
+            scaless = f.header.scales.tolist()
+            offsets = f.header.offsets.tolist()
             x_min, y_min, z_min = f.header.x_min, f.header.y_min, f.header.z_min
             x_max, y_max, z_max = f.header.x_max, f.header.y_max, f.header.z_max
 
@@ -83,8 +84,8 @@ class DirLoader:
         bbox = [x_min, x_max, y_min, y_max, z_min, z_max]
 
         # 2. Based on the bbox of the whole point cloud, determine head_length and tail_length
-        X_max = round((f.header.x_max - self.offsets[0]) / self.scales[0])
-        Y_max = round((f.header.y_max - self.offsets[1]) / self.scales[1])
+        X_max = round((f.header.x_max - offsets[0]) / scales[0])
+        Y_max = round((f.header.y_max - offsets[1]) / scales[1])
         head_len, tail_len = compute_split_length(X_max, Y_max, ratio)
         meta = [self.name, srid, point_count, head_len, tail_len, scales, offsets, bbox]
         return meta
