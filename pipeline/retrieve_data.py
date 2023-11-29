@@ -167,7 +167,7 @@ class Querier:
                     points_within_bbox.append([x, y, z[i]])
 
         # 4. Create results as a table
-        self.cursor.execute(f"CREATE TABLE IF NOT EXIST {self.name} (point geometry(PointZ));")
+        self.cursor.execute(f"CREATE TABLE IF NOT EXISTS {self.name} (point geometry(PointZ));")
         insert_sql = f"INSERT INTO {self.name} VALUES (ST_MakePoint(%s, %s, %s));"
         for point in points_within_bbox:
             self.cursor.execute(insert_sql, point)
