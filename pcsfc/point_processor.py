@@ -34,7 +34,6 @@ class PointProcessor:
         pt_blocks = self.make_groups(encoded_pts)
         self.write_csv(pt_blocks)
 
-
     def encode_split_points(self, points):
         encoded_points = []
         for pt in points:
@@ -67,11 +66,11 @@ class PointProcessor:
             pt_blocks.append((key, sfc_tail, z))
 
         df_hist = pd.DataFrame(histogram, columns=['head', 'num_tail'])
-        df_hist.to_csv("histogram.csv")
+        df_hist.to_csv(f"hist_{self.tail_len}.csv")
 
         return pt_blocks
 
-    def write_csv(self, pt_blocks, filename="pc_record.csv"):
+    def write_csv(self, pt_blocks, filename="point_block.csv"):
         df = pd.DataFrame(pt_blocks, columns=['sfc_head', 'sfc_tail', 'z'])
         df['sfc_tail'] = df['sfc_tail'].apply(lambda x: str(x).replace('[', '{').replace(']', '}'))
         df['z'] = df['z'].apply(lambda x: str(x).replace('[', '{').replace(']', '}'))
