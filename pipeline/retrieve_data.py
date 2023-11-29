@@ -45,9 +45,7 @@ class Querier:
             print("nn search is not developed yet.")
 
     def bbox_query(self, bbox):
-        start_time = time.time()
         self.range_search(bbox)
-        print("-> Filter step time:", round(time.time() - start_time, 2))
 
     def circle_query(self, geometry):
         start_time = time.time()
@@ -69,9 +67,7 @@ class Querier:
         """
         self.cursor.execute(circle_query)
         self.connection.commit()
-        print(f"Circle search is updated in {self.name}.")
         print("-> Refinement (circle) step time:", round(time.time() - filter_time, 2))
-
 
     def polygon_query(self, wkt_string):
         start_time = time.time()
@@ -94,7 +90,6 @@ class Querier:
         """
         self.cursor.execute(polygon_query)
         self.connection.commit()
-        print(f"Polygon search is updated in {self.name}.")
         print("-> Refinement (polygon) step time:", round(time.time() - filter_time, 2))
 
     def maxz_query(self, maxz):
@@ -105,7 +100,6 @@ class Querier:
         """
         self.cursor.execute(z_query)
         self.connection.commit()
-        print(f"Max height search is updated in {self.name}.")
         print("-> Refinement (max_z) step time:", round(time.time() - start_time, 2))
 
     def minz_query(self, minz):
@@ -116,16 +110,17 @@ class Querier:
         """
         self.cursor.execute(z_query)
         self.connection.commit()
-        print(f"Min height search is updated in {self.name} successfully.")
         print("-> Refinement (min_z) step time:", round(time.time() - start_time, 2))
 
     def range_search(self, bbox):
-        # 0. Scale and shift the bounding box ,
+        # 0. Scale and shift the bounding box
+        print(bbox)
         x_scale, y_scale = self.scales[0], self.scales[1]
         x_offset, y_offset = self.offsets[0], self.offsets[1]
         x_min, x_max = bbox[0] * x_scale + x_offset, bbox[1] * x_scale + x_offset
         y_min, y_max = bbox[2] * x_scale + x_offset, bbox[3] * x_scale + x_offset
         bbox = [x_min, x_max, y_min, y_max]
+        print(bbox)
 
         # 1. Find the fully containing and overlapping heads
         head_ranges, head_overlaps = morton_range(bbox, 0, self.head_len, self.tail_len)
@@ -172,12 +167,11 @@ class Querier:
                     points_within_bbox.append([x, y, z[i]])
 
         # 4. Create results as a table
-        self.cursor.execute(f"CREATE TABLE {self.name} (point geometry(PointZ));")
+        self.cursor.execute(f"CREATE TABLE IF NOT EXIST {self.name} (point geometry(PointZ));")
         insert_sql = f"INSERT INTO {self.name} VALUES (ST_MakePoint(%s, %s, %s));"
         for point in points_within_bbox:
             self.cursor.execute(insert_sql, point)
         self.connection.commit()
-        print(f"Points (original values) within the bounding box are inserted into the table {self.name}.")
 
     def disconnect(self):
         if self.connection:
