@@ -91,7 +91,7 @@ class Postgres:
             print(e)
             self.connection.rollback()
 
-    def copy_points(self, file="pc_record.csv"):
+    def copy_points(self, file="point_block.csv"):
         if not self.connection:
             print("Error: Database connection is not established.")
             return
